@@ -1,0 +1,29 @@
+.footer {
+  background: $oc-gray-7;
+  height: 10rem;
+
+  // 내부 내용 가운데 정렬
+  display: flex;
+  align-items: center; // 세로 가운데 정렬
+  justify-content: center; // 가로 가운데 정렬
+  flex-direction: column; // 내부 태그들을 세로줄로 정렬
+
+  .brand {
+    //로고
+    color: white;
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  .admin-logo {
+    //로그인 버튼
+    margin-top: 0.5rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    &:hover {
+      color: white;
+    }
+  }
+}
