@@ -12,7 +12,7 @@ const Button = ({
 
   const Element = (to && !disabled) ? Link : Div; 
 
-  return (
+  return ( //{disabled}는 있으면 추가 없으면 추가되지 않음
     <Element to={to} className={cx('button', theme, {disabled})} onClick={disabled ? () => null : onClick}>
       {children}
     </Element>
