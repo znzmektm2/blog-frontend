@@ -7,7 +7,7 @@ import { pender } from 'redux-pender';
 const INITIALIZE = 'editor/INITIALIZE';
 const CHANGE_INPUT = 'editor/CHANGE_INPUT';
 
-//action ctrators
+//action creators
 export const initialize = createAction(INITIALIZE);
 export const changeInput = createAction(CHANGE_INPUT);
 
