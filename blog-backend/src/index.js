@@ -1,8 +1,25 @@
+require('dotenv').config(); // 프로젝트 참여자 각각이 MacOS, Windows, Linux 등을 사용한다면
+// 환경변수 설정하는 방법이 다르기 때문에 dotenv 라이브러리가 대신 설정해준다.
+
 const Koa = require('koa');
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 
 const api = require('./api');
+const mongoose = require('mongoose');
+
+const {
+  PORT: port = 4000, // 값이 존재하지 않는다면 4000을 기본값으로 사용
+  MONGO_URI: mongoURI
+} = process.env;
+
+mongoose.Promise = global.Promise; // Node의 Promise를 사용하도록 설정
+mongoose.connect(mongoURI, {useFindAndModify: false, useUnifiedTopology: true, useNewUrlParser: true })
+  .then(() => { //{ useNewUrlParser: true } 를 적지 않으면 deprecatedError 가 발생한다. 
+    console.log('connected to mongodb');
+  }).catch((e) => {
+    console.log(e);
+  });
 
 const app = new Koa();
 const router = new Router();
@@ -59,6 +76,6 @@ app.use(bodyParser());
 // app 인스턴스에 라우터 적용
 app.use(router.routes()).use(router.allowedMethods());
 
-app.listen(4000, () => {
-  console.log('listening to port 4000');
+app.listen(port, () => {
+  console.log('listening to port', port);
 });

@@ -6,6 +6,11 @@ module.exports = {
     "extends": [
         "airbnb-base"
     ],
+    "settings": {
+        "import/resolver": {
+            node: { paths: [path.resolve('./src')] }
+        },
+    },
     "globals": {
         "Atomics": "readonly",
         "SharedArrayBuffer": "readonly"
