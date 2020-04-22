@@ -7,9 +7,9 @@ import { bindActionCreators } from 'redux';
 
 class Post extends Component {
   initialize = async () => {
-    const { postActions, id } = this.props;
+    const { PostActions, id } = this.props;
     try {
-      await postActions.getPost(id);
+      await PostActions.getPost(id);
     } catch(e) {
       console.log(e);
     }
