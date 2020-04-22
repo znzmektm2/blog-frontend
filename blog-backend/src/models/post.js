@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-//const Schema = mongoose.Schema; 아래로 변경
 const { Schema } = mongoose;
 
 const Post = new Schema ({

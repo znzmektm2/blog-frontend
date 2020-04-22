@@ -71,6 +71,7 @@ const router = new Router();
 router.use('/api', api.routes()); // api 라우트 적용
 
 // 라우터 적용 전에 bodyparser 적용
+// 클라이언트 측에서 json 형식으로 바디를 보내면 서버측에서 ctx.request.body 등으로 접근할 수 있게됨
 app.use(bodyParser());
 
 // app 인스턴스에 라우터 적용

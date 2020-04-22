@@ -1,4 +1,20 @@
 const Post = require('models/post');
+const Joi = require('joi');
+const { ObjectId } = require('mongoose').Types;
+
+exports.checkObjectId = (ctx, next) => {
+  const { id } = ctx.params;
+
+  // 검증 실패
+  if(!ObjectId.isValid(id)) {
+    ctx.status = 400; // 400 Bad Request
+    return null;
+  } 
+  
+  return next(); // next를 리턴해야 ctx.body가 제대로 설정됩니다.
+}
+
+
 
 // let postId = 1; // id의 초깃값입니다.a1
 
@@ -15,6 +31,23 @@ const Post = require('models/post');
 //   { title, body, tags }
 // */
 exports.write = async (ctx) => {
+  // 객체가 지닌 값들을 검증
+  const schema = Joi.object().keys({
+    title: Joi.string().required(), // 뒤에 rerquired를 붙여 주면 필수 항목이라는 의미
+    body: Joi.string().required(),
+    tags: Joi.array().items(Joi.string()).required() // 문자열 배열
+  });
+
+  // 첫 번째 파라미터는 검증할 객체, 두 번째는 스키마
+  const result = Joi.validate(ctx.request.body, schema);
+
+  // 오류가 발생하면 오류 내용 응답
+  if(result.error) {
+    ctx.status = 400;
+    ctx.body = result.error;
+    return;
+  }
+
   const { title, body, tags } = ctx.request.body;
 
   // 새 Post 인스턴스를 만듭니다.
@@ -46,9 +79,31 @@ exports.write = async (ctx) => {
 //   GET /api/posts
 // */
 exports.list = async (ctx) => {
+  // page가 주어지지 않았다면 1로 간주
+  // query는 문자열 형태로 받아 오므로 숫자로 변환
+  const page = parseInt(ctx.query.page || 1, 10); // (ctx.query.page || 1, 10) 에서 10은 10진수 
+  // 잘모된 페이지가 주어졌다면 오류
+  if(page < 1) {
+    ctx.status = 400;
+    return;
+  }
+
   try {
-    const posts = await Post.find(); //Post.find().exec() -> 4버전 부터는 .exec() 안붙여도 됨
-    ctx.body = posts;
+    const posts = await Post.find() //Post.find().exec() -> 4버전 부터는 .exec() 안붙여도 됨
+      .sort({_id:-1})
+      .limit(10)
+      .skip((page - 1) * 5)
+      .lean();
+
+    const postCount = await Post.countDocuments();
+    const limitBodyLength = post => ({
+      ...post,
+      body: post.body.length < 100 ? post.body : `${post.body.slice(0, 100)}...`
+    });
+    ctx.body = posts.map(limitBodyLength);
+    // 마지막 페이지 알려주기
+    // ctx.set은 response header를 설정
+    ctx.set('Last-Page', Math.ceil(postCount / 10));
   } catch (e) {
     ctx.throw(e, 500);
   }
@@ -64,7 +119,7 @@ exports.list = async (ctx) => {
 exports.read = async (ctx) => {
   const { id } = ctx.params;
   try {
-    const post = await Post.findById(id).exec();
+    const post = await Post.findById(id);
     // 포스트가 존재하지 않습니다.
     if(!post) {
       ctx.status = 404;
@@ -102,7 +157,7 @@ exports.read = async (ctx) => {
 exports.remove = async (ctx) => {
   const { id } = ctx.params;
   try {
-    await Post.findByIdAndRemove(id).exec();
+    await Post.findByIdAndRemove(id);
     ctx.status = 204;
   } catch (e) {
     ctx.throw(e, 500);
@@ -140,7 +195,7 @@ exports.update = async (ctx) => {
       new: true,
       // 이 값을 설정해야 업데이트된 객체를 반호나합니다.
       // 설정하지 않으면 업데이트되기 전의 객체를 반환합니다.
-    }).exec();
+    });
     //포스트가 존재하지 않을 때
     if(!post) {
       ctx.status = 404;
