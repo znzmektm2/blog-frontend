@@ -35,7 +35,7 @@ exports.write = async (ctx) => {
   const schema = Joi.object().keys({
     title: Joi.string().required(), // 뒤에 rerquired를 붙여 주면 필수 항목이라는 의미
     body: Joi.string().required(),
-    tags: Joi.array().items(Joi.string()).required() // 문자열 배열
+    tags: Joi.array().items(Joi.string()).required() // items는 배열안의 각 요소들. Joi.string()는 그안의 값이 문자여야함을 정의.
   });
 
   // 첫 번째 파라미터는 검증할 객체, 두 번째는 스키마
@@ -82,20 +82,26 @@ exports.list = async (ctx) => {
   // page가 주어지지 않았다면 1로 간주
   // query는 문자열 형태로 받아 오므로 숫자로 변환
   const page = parseInt(ctx.query.page || 1, 10); // (ctx.query.page || 1, 10) 에서 10은 10진수 
-  // 잘모된 페이지가 주어졌다면 오류
+  const { tag } = ctx.query;
+
+  const query = tag ? {
+    tags: tag // tags 배열에 tag를 가진 포스트 찾기
+  } : {};
+
+  // 잘못된 페이지가 주어졌다면 오류
   if(page < 1) {
     ctx.status = 400;
     return;
   }
 
   try {
-    const posts = await Post.find() //Post.find().exec() -> 4버전 부터는 .exec() 안붙여도 됨
+    const posts = await Post.find(query) //Post.find().exec() -> 4버전 부터는 .exec() 안붙여도 됨
       .sort({_id:-1})
-      .limit(10)
-      .skip((page - 1) * 5)
-      .lean();
+      .limit(10) // 보이는 개수 제한
+      .skip((page - 1) * 10) // 10을 넣어주면 첫 열 개를 제외하고 그 다음 데이터를 불러옴
+      .lean(); // 처음부터JSON 형태로 조회할 수 있게함
 
-    const postCount = await Post.countDocuments();
+    const postCount = await Post.countDocuments(query);
     const limitBodyLength = post => ({
       ...post,
       body: post.body.length < 100 ? post.body : `${post.body.slice(0, 100)}...`

@@ -22,12 +22,14 @@ class EditorHeaderContainer extends Component {
     const post = {
       title,
       body: markdown,
-      tags: tags === "" ? [] :[...new Set(tags.split(',').map(tag => tag.trim()))]
+      tags: tags === "" ? [] : [...new Set(tags.split(',').map(tag => tag.trim()))]
     };
+    
     try {
       await EditorActions.writePost(post);
       // 페이지를 이동시킵니다. 주의: postId는 위쪽에서 레퍼런스를 만들지 않고
       // 이 자리에서 this.props.postId를 조회해야 합니다(현재 값을 불러오기 위함)
+      
       history.push(`/post/${this.props.postId}`);
     } catch (e) {
       console.log(e);

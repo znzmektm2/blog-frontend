@@ -2,33 +2,55 @@ import React from 'react';
 import styles from './PostList.scss';
 import classNames from 'classnames/bind';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
+import removeMd from 'remove-markdown';
+import { mockComponent } from 'react-dom/test-utils';
 
 const cx = classNames.bind(styles);
 
-const PostItem = () => {
+const PostItem = ({title, body, publishedDate, tags, id}) => {
+  const tagList = tags.map(
+    tag => <Link key={tag} to={`/tag/${tag}`}>#{tag}</Link>
+  );
+
   return (
     <div className={cx('post-item')}>
-      <h2><a>타이틀</a></h2>
-      <div className={cx('data')}>2017-10-24</div>
-      <p>내용</p>
+      <h2><Link to={`/post/${id}`}>{title}</Link></h2>
+      <div className={cx('data')}>{moment(publishedDate).format('ll')}</div>
+
+      {/* moment: 2020-04-19T12:59-0500 를 Mon Apr 19 2020 12:59:00 GMT-0500 로 바꿔줌 */}
+      {/* .format('ll'): Mon Apr 19 2020 12:59:00 GMT-0500 를 Apr 19, 2020 로 바꿔줌 */}
+      
+      <p>{removeMd(body)}</p>
       <div className={cx('tags')}>
-        <a>#태그</a>
-        <a>#태그</a>
-        <a>#태그</a>
+        {tagList}
       </div>
     </div>
   );
 };
 
-const PostList = () => {
+const PostList = ({posts}) => {
+  const postList = posts.map(
+    (post) => {
+      const { _id, title, body, publishedDate, tags } = post.toJS();
+      return (
+        <PostItem
+          title={title}
+          body={body}
+          publishedDate={publishedDate}
+          tags={tags}
+          key={_id}
+          id={_id}
+        />        
+      )
+    }
+  );
+
   return (
     <div className={cx('post-list')}>
-      <PostItem/>
-      <PostItem/>
-      <PostItem/>
-      <PostItem/>
+      {postList}     
     </div>
-  );
+  )
 };
 
 export default PostList;

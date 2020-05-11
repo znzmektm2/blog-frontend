@@ -38,7 +38,7 @@ class EditorPane extends Component {
   }
 
   handleChange = (e) => {
-    const { onChangeInput } = this.props;
+    const { onChangeInput, title, markdown, tags } = this.props;
     const { value, name } = e.target;
     onChangeInput({name, value});
   }
