@@ -7,10 +7,12 @@ const bodyParser = require('koa-bodyparser');
 
 const api = require('./api');
 const mongoose = require('mongoose');
+const session = require('koa-session');
 
 const {
   PORT: port = 4000, // 값이 존재하지 않는다면 4000을 기본값으로 사용
-  MONGO_URI: mongoURI
+  MONGO_URI: mongoURI,
+  COOKIE_SIGN_KEY: signKey
 } = process.env;
 
 mongoose.Promise = global.Promise; // Node의 Promise를 사용하도록 설정
@@ -67,12 +69,22 @@ const router = new Router();
 //   ctx.body = id ? `포스트 #${id}` : '포스트 아이디가 없습니다.';
 // })
 
+
 // 라우터 설정
 router.use('/api', api.routes()); // api 라우트 적용
 
 // 라우터 적용 전에 bodyparser 적용
 // 클라이언트 측에서 json 형식으로 바디를 보내면 서버측에서 ctx.request.body 등으로 접근할 수 있게됨
 app.use(bodyParser());
+
+// 세션/키 적용
+const sessionConfig = {
+  maxAge: 86400000, // 세션 유효기간 하루로 설정
+  // signed: true(기본으로 설정되어 있습니다.)
+};
+
+app.use(session(sessionConfig, app));
+app.keys = [signKey];
 
 // app 인스턴스에 라우터 적용
 app.use(router.routes()).use(router.allowedMethods());

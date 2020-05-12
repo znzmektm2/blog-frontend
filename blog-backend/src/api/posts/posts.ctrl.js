@@ -14,6 +14,14 @@ exports.checkObjectId = (ctx, next) => {
   return next(); // next를 리턴해야 ctx.body가 제대로 설정됩니다.
 }
 
+exports.checkLogin = (ctx, next) => {
+  if(!ctx.session.logged) {
+    ctx.status = 401; // 비인증을 의미. 반드시 스스로를 인증해야 한다
+    return null;
+  }
+  return next();
+}
+
 
 
 // let postId = 1; // id의 초깃값입니다.a1
@@ -60,7 +68,7 @@ exports.write = async (ctx) => {
     ctx.body = post;
   } catch(e) {
     // 데이터베이스의 오류가 발생합니다.
-    ctx.throw(e, 500);
+    ctx.throw(e, 500); // 500은 Internal Server Error로 서버가 방법을 모르는 상황과 마주쳤다. 서버는 아직 처리 방법을 알 수 없다. 
   }
 };
 

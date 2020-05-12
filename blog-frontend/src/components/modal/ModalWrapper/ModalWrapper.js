@@ -33,12 +33,10 @@ class ModalWrapper extends Component {
     const { animate } = this.state;
 
     // visible과 animation 값이 둘 다 false일 때만 null을 리턴
-    if(!visible && !animate) return null; // 아래 return 이 실행되지 않고 null을 리턴;
+    if(!visible && !animate) return null; // **아래 return 이 실행되지 않고 null을 리턴;
 
     // 상태에 따라 애니메이션 설정
     const animation = animate && (visible ? 'enter' : 'leave');
-    console.log('animate '+animate);
-    console.log('visible '+visible);
 
     return (
       <div>
