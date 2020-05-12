@@ -8,7 +8,8 @@ import { withRouter } from 'react-router-dom';
 
 class AskRemoveModalContainer extends Component {
   handleCancel = () => {
-
+    const { BaseActions } = this.props;
+    BaseActions.hideModal('remove');
   }
 
   handleConfirm = async() => {
