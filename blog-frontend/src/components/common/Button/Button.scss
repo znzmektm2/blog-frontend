@@ -20,6 +20,17 @@
     }
   }
 
+  // gray: 회색 버튼
+  &.gray {
+    background: $oc-gray-7;
+    &:hover {
+      background: $oc-gray-6;
+    }
+    &:active {
+      background: $oc-gray-7;
+    }
+  }
+
   &.outline {
     border: 2px solid white;
     border-radius: 2px;

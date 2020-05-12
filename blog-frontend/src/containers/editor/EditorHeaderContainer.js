@@ -3,13 +3,21 @@ import EditorHeader from 'components/editor/EditorHeader';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { withRouter } from 'react-router-dom';
+import queryString from 'query-string';
 
 import * as editorActions from 'store/modules/editor';
 
 class EditorHeaderContainer extends Component {
   componentDidMount() {
-    const { EditorActions } = this.props;
+    const { EditorActions, location } = this.props;
     EditorActions.initialize(); // 에디터를 초기화합니다.
+
+    // 쿼리 파싱
+    const { id } = queryString.parse(location.search);
+    if(id) {
+      // id가 존재하면 포스트 불러오기
+      EditorActions.getPost(id);
+    }
   }
 
   handleGoBack = () => {
@@ -18,18 +26,23 @@ class EditorHeaderContainer extends Component {
   }
 
   handleSubmit = async () => {
-    const { title, markdown, tags, EditorActions, history } = this.props;
+    const { title, markdown, tags, EditorActions, history, location } = this.props;
     const post = {
       title,
       body: markdown,
       tags: tags === "" ? [] : [...new Set(tags.split(',').map(tag => tag.trim()))]
     };
-    
+
     try {
-      await EditorActions.writePost(post);
+      const { id } = queryString.parse(location.search);
+      if(id) {
+        await EditorActions.editPost({id, ...post}); // 객체 안에 id 값과 post변수의 내용을 연결해서 넣음
+        history.push(`/post/${id}`);
+        return;
+      }
+      await EditorActions.writePost(post); // post 변수의 객체를 전달
       // 페이지를 이동시킵니다. 주의: postId는 위쪽에서 레퍼런스를 만들지 않고
       // 이 자리에서 this.props.postId를 조회해야 합니다(현재 값을 불러오기 위함)
-      
       history.push(`/post/${this.props.postId}`);
     } catch (e) {
       console.log(e);
@@ -38,11 +51,12 @@ class EditorHeaderContainer extends Component {
 
   render() {
     const { handleGoBack, handleSubmit } = this;
-
+    const { id } = queryString.parse(this.props.location.search);
     return (
       <EditorHeader
         onGoBack={handleGoBack}
         onSubmit={handleSubmit}
+        isEdit={id ? true : false}
       />
     );
   }

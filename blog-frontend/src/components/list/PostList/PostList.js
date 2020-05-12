@@ -16,7 +16,7 @@ const PostItem = ({title, body, publishedDate, tags, id}) => {
   return (
     <div className={cx('post-item')}>
       <h2><Link to={`/post/${id}`}>{title}</Link></h2>
-      <div className={cx('data')}>{moment(publishedDate).format('ll')}</div>
+      <div className={cx('date')}>{moment(publishedDate).format('ll')}</div>
 
       {/* moment: 2020-04-19T12:59-0500 를 Mon Apr 19 2020 12:59:00 GMT-0500 로 바꿔줌 */}
       {/* .format('ll'): Mon Apr 19 2020 12:59:00 GMT-0500 를 Apr 19, 2020 로 바꿔줌 */}
