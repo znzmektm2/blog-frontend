@@ -13,13 +13,14 @@ class HeaderContainer extends Component {
 
   render() {
     const { handleRemove } = this;
-    const { match } = this.props;
+    const { match, logged } = this.props;
 
     const { id } = match.params; // withRouter 를 사용하면 history, location, match 등을 사용할 수 있음
     
     return (
       <Header
         postId={id}
+        logged={logged}
         onRemove={handleRemove}
       />
     );
@@ -27,7 +28,9 @@ class HeaderContainer extends Component {
 };
 
 export default connect(
-  (state) => ({}),
+  (state) => ({
+    logged: state.base.get('logged')
+  }),
   (dispatch) => ({
     BaseActions: bindActionCreators(baseActions, dispatch)
   })

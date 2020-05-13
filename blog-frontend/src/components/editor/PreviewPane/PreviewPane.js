@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import styles from './PreviewPane.scss';
 import classNames from 'classnames/bind';
 import MarkdownRender from 'components/common/MarkdownRender';
