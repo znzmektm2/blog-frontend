@@ -22,7 +22,6 @@ class FooterContainer extends Component {
   render() {
     const { handleLoginClick } = this;
     const { logged } = this.props;
-    console.log(logged);
     return (
       <Footer onLoginClick={handleLoginClick} logged={logged} />
     );
