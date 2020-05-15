@@ -65,7 +65,9 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   publicUrlOrPath,
-  globalStyles: resolveApp('src/styles')
+  globalStyles: resolveApp('src/styles'),
+  ssrJS: resolveApp('src/ssr.js'),
+  ssrBuild: resolveApp('../blog-backend/src/ssr')
 };
 
 
