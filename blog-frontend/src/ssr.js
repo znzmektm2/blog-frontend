@@ -22,11 +22,7 @@ const render = (ctx) => {
     </Provider>
   );
   
-  return (
-    <div>
-      
-    </div>
-  );
+  return html;
 };
 
 export default render;
